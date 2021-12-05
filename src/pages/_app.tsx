@@ -1,3 +1,4 @@
+import { AppProps } from 'next/app';
 import { ChakraProvider, ColorModeProvider } from '@chakra-ui/react';
 import { Provider, createClient } from 'urql';
 
@@ -8,7 +9,7 @@ const client = createClient({
   fetchOptions: { credentials: 'include' }, //have some cookie please
 });
 
-function MyApp({ Component, pageProps }) {
+function MyApp({ Component, pageProps }: AppProps) {
   return (
     <Provider value={client}>
       <ChakraProvider resetCSS theme={theme}>
