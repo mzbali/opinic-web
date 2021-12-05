@@ -22,10 +22,10 @@ export const InputField: React.FC<InputFieldProps> = ({
 }) => {
   const [field, { error, touched }] = useField(props);
   return (
-    <FormControl isInvalid={error && touched}>
+    <FormControl isInvalid={!!error && touched}>
       <FormLabel htmlFor={field.name}>{label}</FormLabel>
       <Input {...field} {...props} id={field.name} />
-      <FormErrorMessage>{error}</FormErrorMessage>
+      {!!error && touched && <FormErrorMessage>{error}</FormErrorMessage>}
     </FormControl>
   );
 };
