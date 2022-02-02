@@ -14,14 +14,14 @@ import { createUrqlClient } from '../../utils/createUrqlClient';
 const ChangePassword: NextPage = () => {
   const router = useRouter();
   const [isExpired, setIsExpired] = useState<string | null>(null);
-  const { token } = router.query;
   const [, changePassword] = useChangePasswordMutation();
   return (
     <Formik
       initialValues={{ newPassword: '' }}
       onSubmit={async (values, { setErrors }) => {
         const response = await changePassword({
-          token: token as string,
+          token:
+            typeof router.query.token === 'string' ? router.query.token : '',
           newPassword: values.newPassword,
         });
         if (response.data?.changePassword.errors) {
