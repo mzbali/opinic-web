@@ -3,20 +3,31 @@ import { withUrqlClient } from 'next-urql';
 import { createUrqlClient } from '../utils/createUrqlClient';
 import { usePostsQuery } from '../generated/graphql';
 import { Layout } from '../components/Layout';
-import { Link } from '@chakra-ui/react';
+import { Box, Flex, Heading, Link, Stack, Text } from '@chakra-ui/react';
 import NextLink from 'next/link';
 
 const Index = () => {
   const [{ data }] = usePostsQuery({ variables: { limit: 10, cursor: null } });
   return (
     <Layout>
-      <NextLink href="/create-post">
-        <Link>Create Post</Link>
-      </NextLink>
-      <br />
-      {!data?.posts
-        ? 'loading...'
-        : data.posts.map((post) => <p key={post.id}>{post.title}</p>)}
+      <Flex align="center" mb={8}>
+        <Heading>Opinic</Heading>
+        <NextLink href="/create-post">
+          <Link ml="auto">Create Post</Link>
+        </NextLink>
+      </Flex>
+      <Stack spacing={6}>
+        {!data?.posts
+          ? 'loading...'
+          : data.posts.map((post) => {
+              return (
+                <Box p={5} shadow="md" borderWidth="1px" key={post.id}>
+                  <Heading fontSize="xl">{post.title}</Heading>
+                  <Text mt={4}>{post.textSnippet}</Text>
+                </Box>
+              );
+            })}
+      </Stack>
     </Layout>
   );
 };
