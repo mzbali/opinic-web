@@ -77,6 +77,7 @@ export type Post = {
   creatorId: Scalars['Float'];
   id: Scalars['Float'];
   text: Scalars['String'];
+  textSnippet: Scalars['String'];
   title: Scalars['String'];
   updatedAt: Scalars['String'];
 };
@@ -184,7 +185,7 @@ export type PostsQueryVariables = Exact<{
 }>;
 
 
-export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', id: number, title: string, createdAt: string, updatedAt: string, creatorId: number }> };
+export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', id: number, title: string, textSnippet: string, createdAt: string, updatedAt: string, creatorId: number }> };
 
 export const RegularUserFragmentDoc = gql`
     fragment RegularUser on User {
@@ -293,6 +294,7 @@ export const PostsDocument = gql`
   posts(limit: $limit, cursor: $cursor) {
     id
     title
+    textSnippet
     createdAt
     updatedAt
     creatorId
