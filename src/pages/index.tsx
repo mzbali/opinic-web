@@ -16,7 +16,7 @@ import NextLink from 'next/link';
 
 const Index = () => {
   const [variables, setVariables] = useState({
-    limit: 10,
+    limit: 49,
     cursor: null as string | null,
   });
   const [{ data, fetching }] = usePostsQuery({
@@ -36,7 +36,7 @@ const Index = () => {
       <Stack spacing={6}>
         {fetching && !data?.posts
           ? 'loading...'
-          : data!.posts.map((post) => {
+          : data!.posts.posts.map((post) => {
               return (
                 <Box p={5} shadow="md" borderWidth="1px" key={post.id}>
                   <Heading fontSize="xl">{post.title}</Heading>
@@ -45,14 +45,14 @@ const Index = () => {
               );
             })}
       </Stack>
-      {data ? (
+      {data && data.posts.hasMore ? (
         <Flex my={8} justify="center">
           <Button
             colorScheme="teal"
             onClick={() =>
               setVariables((state) => ({
                 limit: state.limit,
-                cursor: data.posts[data.posts.length - 1].createdAt,
+                cursor: data.posts.posts[data.posts.posts.length - 1].createdAt,
               }))
             }
           >
