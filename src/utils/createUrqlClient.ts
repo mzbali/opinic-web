@@ -51,11 +51,21 @@ const cursorPagination = (): Resolver => {
     const isItInTheCache = cache.resolve(entityKey, fieldkey);
     info.partial = !isItInTheCache; // if in cache sill request again
     const result: string[] = [];
+    let hasMore = true;
     fieldInfos.forEach((fi) => {
-      const data = cache.resolve(entityKey, fi.fieldKey) as string[];
+      const key = cache.resolve(entityKey, fi.fieldKey) as string;
+      const data = cache.resolve(key, 'posts') as string[]; //since selection set
+      const _hasMore = cache.resolve(key, 'hasMore');
+      if (!_hasMore) {
+        hasMore = false;
+      }
       result.push(...data); // every data from request 0 to n should be in the array, load more grow more
     });
-    return result;
+    return {
+      posts: result,
+      hasMore,
+      __typename: 'PaginatedPosts',
+    };
   };
 };
 
@@ -65,6 +75,9 @@ export const createUrqlClient = (ssrExchange: any) => ({
   exchanges: [
     dedupExchange,
     cacheExchange({
+      keys: {
+        PaginatedPosts: () => null,
+      },
       resolvers: {
         Query: {
           posts: cursorPagination(),
