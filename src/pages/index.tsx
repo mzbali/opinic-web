@@ -16,7 +16,7 @@ import NextLink from 'next/link';
 
 const Index = () => {
   const [variables, setVariables] = useState({
-    limit: 49,
+    limit: 15,
     cursor: null as string | null,
   });
   const [{ data, fetching }] = usePostsQuery({
@@ -41,6 +41,9 @@ const Index = () => {
                 <Box p={5} shadow="md" borderWidth="1px" key={post.id}>
                   <Heading fontSize="xl">{post.title}</Heading>
                   <Text mt={4}>{post.textSnippet}</Text>
+                  <Text mt={6} as="i">
+                    Created By <Text as="samp">{post.creator.username}</Text>
+                  </Text>
                 </Box>
               );
             })}
