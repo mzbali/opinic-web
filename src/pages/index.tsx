@@ -8,12 +8,14 @@ import {
   Button,
   Flex,
   Heading,
+  IconButton,
   Link,
   Stack,
   Text,
 } from '@chakra-ui/react';
-import NextLink from 'next/link';
+import { DeleteIcon } from '@chakra-ui/icons';
 import { UpdootSection } from '../components/UpdootSection';
+import NextLink from 'next/link';
 
 const Index = () => {
   const [variables, setVariables] = useState({
@@ -28,12 +30,7 @@ const Index = () => {
   }
   return (
     <Layout>
-      <Flex align="center" mb={8}>
-        <Heading>Opinic</Heading>
-        <NextLink href="/create-post">
-          <Link ml="auto">Create Post</Link>
-        </NextLink>
-      </Flex>
+      <Flex align="center" mb={8}></Flex>
       <Stack spacing={6}>
         {fetching && !data?.posts
           ? 'loading...'
@@ -42,12 +39,23 @@ const Index = () => {
                 <Flex p={5} shadow="md" borderWidth="1px" key={post.id}>
                   <UpdootSection post={post} />
                   <Box>
-                    <Heading fontSize="xl">{post.title}</Heading>
+                    <NextLink href={`/post/${post.id}`}>
+                      <Link>
+                        <Heading fontSize="xl">{post.title}</Heading>
+                      </Link>
+                    </NextLink>
                     <Text mt={4}>{post.textSnippet}</Text>
                     <Text mt={6} as="i">
                       Created By <Text as="samp">{post.creator.username}</Text>
                     </Text>
                   </Box>
+                  <IconButton
+                    aria-label="delete post"
+                    icon={<DeleteIcon />}
+                    colorScheme="red"
+                    ml="auto"
+                    mt="auto"
+                  />
                 </Flex>
               );
             })}
