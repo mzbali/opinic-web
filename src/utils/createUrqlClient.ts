@@ -53,7 +53,6 @@ const cursorPagination = (): Resolver => {
     }
     const fieldKey = `${fieldName}${stringifyVariables(fieldArgs)}`;
     const isItInTheCache = cache.resolve(entityKey, fieldKey);
-    console.log(isItInTheCache);
     info.partial = !isItInTheCache; // if in cache sill request again
     const result: string[] = [];
     let hasMore = true;
