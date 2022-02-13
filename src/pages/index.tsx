@@ -1,27 +1,27 @@
-import React, { useState } from 'react';
-import { withUrqlClient } from 'next-urql';
-import { createUrqlClient } from '../utils/createUrqlClient';
-import { usePostsQuery } from '../generated/graphql';
-import { Layout } from '../components/Layout';
 import {
   Box,
   Button,
   Flex,
   Heading,
-  IconButton,
   Link,
   Stack,
   Text,
 } from '@chakra-ui/react';
-import { DeleteIcon } from '@chakra-ui/icons';
-import { UpdootSection } from '../components/UpdootSection';
+import { withUrqlClient } from 'next-urql';
 import NextLink from 'next/link';
+import React, { useState } from 'react';
+import { Layout } from '../components/Layout';
+import { UpdateDeletePost } from '../components/UpdateDeletePost';
+import { UpdootSection } from '../components/UpdootSection';
+import { useMeQuery, usePostsQuery } from '../generated/graphql';
+import { createUrqlClient } from '../utils/createUrqlClient';
 
 const Index = () => {
   const [variables, setVariables] = useState({
     limit: 15,
     cursor: null as string | null,
   });
+  const [{ data: meData }] = useMeQuery();
   const [{ data, fetching }] = usePostsQuery({
     variables,
   });
@@ -49,13 +49,9 @@ const Index = () => {
                       Created By <Text as="samp">{post.creator.username}</Text>
                     </Text>
                   </Box>
-                  <IconButton
-                    aria-label="delete post"
-                    icon={<DeleteIcon />}
-                    colorScheme="red"
-                    ml="auto"
-                    mt="auto"
-                  />
+                  {meData?.me?.id !== post.creator.id ? null : (
+                    <UpdateDeletePost id={post.id} />
+                  )}
                 </Flex>
               );
             })}
