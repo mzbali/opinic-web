@@ -8,6 +8,8 @@ import { gql } from '@urql/core';
 import { cacheExchange, QueryInput, Resolver } from '@urql/exchange-graphcache';
 import { pipe, tap } from 'wonka';
 import {
+  DeletePostMutation,
+  DeletePostMutationVariables,
   LoginMutation,
   LogoutMutation,
   MeDocument,
@@ -103,6 +105,14 @@ export const createUrqlClient = (ssrExchange: any, ctx: any) => {
         updates: {
           // updating query after our mutation fires
           Mutation: {
+            deletePost: (
+              _result: DeletePostMutation,
+              args: DeletePostMutationVariables,
+              cache,
+              _info
+            ) => {
+              cache.invalidate({ __typename: 'Post', id: args.id });
+            },
             vote: (
               _result: VoteMutation,
               args: VoteMutationVariables,
