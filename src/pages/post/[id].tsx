@@ -1,16 +1,16 @@
 import { withUrqlClient } from 'next-urql';
 import { Text } from '@chakra-ui/react';
-import { useRouter } from 'next/router';
 import { Layout } from '../../components/Layout';
 import { usePostQuery } from '../../generated/graphql';
 import { createUrqlClient } from '../../utils/createUrqlClient';
 import { NextPage } from 'next';
+import { useGetIntId } from '../../utils/useGetIntId';
 
 const Post: NextPage = () => {
-  const router = useRouter();
+  const intId = useGetIntId();
   const [{ data, fetching, error }] = usePostQuery({
     variables: {
-      id: typeof router.query.id === 'string' ? parseInt(router.query.id) : -1,
+      id: intId,
     },
   });
   if (fetching) {
