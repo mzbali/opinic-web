@@ -68,7 +68,7 @@ export type MutationRegisterArgs = {
 
 
 export type MutationUpdatePostArgs = {
-  id: Scalars['Float'];
+  id: Scalars['Int'];
   input?: InputMaybe<PostInput>;
 };
 
@@ -149,6 +149,14 @@ export type RegularErrorsFragment = { __typename?: 'FieldError', field: string, 
 export type RegularUserFragment = { __typename?: 'User', id: number, username: string, email: string };
 
 export type RegularUserResponseFragment = { __typename?: 'UserResponse', user?: { __typename?: 'User', id: number, username: string, email: string } | null | undefined, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null | undefined };
+
+export type UpdatePostMutationVariables = Exact<{
+  id: Scalars['Int'];
+  input: PostInput;
+}>;
+
+
+export type UpdatePostMutation = { __typename?: 'Mutation', updatePost?: { __typename?: 'Post', id: number, title: string, text: string } | null | undefined };
 
 export type ChangePasswordMutationVariables = Exact<{
   token: Scalars['String'];
@@ -266,6 +274,19 @@ export const RegularUserResponseFragmentDoc = gql`
 }
     ${RegularUserFragmentDoc}
 ${RegularErrorsFragmentDoc}`;
+export const UpdatePostDocument = gql`
+    mutation UpdatePost($id: Int!, $input: PostInput!) {
+  updatePost(id: $id, input: $input) {
+    id
+    title
+    text
+  }
+}
+    `;
+
+export function useUpdatePostMutation() {
+  return Urql.useMutation<UpdatePostMutation, UpdatePostMutationVariables>(UpdatePostDocument);
+};
 export const ChangePasswordDocument = gql`
     mutation ChangePassword($token: String!, $newPassword: String!) {
   changePassword(token: $token, newPassword: $newPassword) {
