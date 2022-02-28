@@ -38,7 +38,7 @@ const Index = () => {
               return (
                 <Flex p={5} shadow="md" borderWidth="1px" key={post.id}>
                   <UpdootSection post={post} />
-                  <Box>
+                  <Box flex={1}>
                     <NextLink href={`/post/${post.id}`}>
                       <Link>
                         <Heading fontSize="xl">{post.title}</Heading>
