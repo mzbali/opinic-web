@@ -4,22 +4,35 @@ import { Button } from '@chakra-ui/react';
 import { Formik, Form } from 'formik';
 import { InputField } from '../components/InputField';
 import { Wrapper } from '../components/Wrapper';
-import { useLoginMutation } from '../generated/graphql';
+import {
+  MeDocument,
+  MeQuery,
+  PostsDocument,
+  useLoginMutation,
+} from '../generated/graphql';
 import { toErrorMap } from '../utils/toErrorMap';
 import { useRouter } from 'next/router';
-import { withUrqlClient } from 'next-urql';
-import { createUrqlClient } from '../utils/createUrqlClient';
 
 interface LoginProps {}
 
 const Login: React.FC<LoginProps> = ({}) => {
-  const [, login] = useLoginMutation();
+  const [login] = useLoginMutation();
   const router = useRouter();
   return (
     <Formik
       initialValues={{ usernameOrEmail: '', password: '' }}
       onSubmit={async (values, { setErrors }) => {
-        const response = await login(values);
+        const response = await login({
+          variables: values,
+          //refetchQueries: [{ query: MeDocument }],
+          update: (cache, { data }) => {
+            cache.writeQuery<MeQuery>({
+              query: MeDocument,
+              data: { me: data?.login.user },
+            });
+          },
+          refetchQueries: [{ query: PostsDocument, variables: { limit: 15 } }],
+        });
         if (response.data?.login.errors) {
           setErrors(toErrorMap(response.data.login.errors));
         } else if (response.data?.login.user) {
@@ -66,4 +79,4 @@ const Login: React.FC<LoginProps> = ({}) => {
   );
 };
 
-export default withUrqlClient(createUrqlClient)(Login);
+export default Login;
