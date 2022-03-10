@@ -7,32 +7,27 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react';
-import { withUrqlClient } from 'next-urql';
 import NextLink from 'next/link';
-import React, { useState } from 'react';
+import React from 'react';
 import { Layout } from '../components/Layout';
 import { UpdateDeletePost } from '../components/UpdateDeletePost';
 import { UpdootSection } from '../components/UpdootSection';
 import { useMeQuery, usePostsQuery } from '../generated/graphql';
-import { createUrqlClient } from '../utils/createUrqlClient';
 
 const Index = () => {
-  const [variables, setVariables] = useState({
-    limit: 15,
-    cursor: null as string | null,
+  const { data: meData } = useMeQuery();
+  const { data, loading, fetchMore } = usePostsQuery({
+    variables: { limit: 15 },
+    notifyOnNetworkStatusChange: true,
   });
-  const [{ data: meData }] = useMeQuery();
-  const [{ data, fetching }] = usePostsQuery({
-    variables,
-  });
-  if (!fetching && !data) {
+  if (!loading && !data) {
     return <Text>There is no data for some reason</Text>;
   }
   return (
     <Layout>
       <Flex align="center" mb={8}></Flex>
       <Stack spacing={6}>
-        {fetching && !data?.posts
+        {loading && !data?.posts
           ? 'loading...'
           : data!.posts.posts.map((post) => {
               return (
@@ -60,11 +55,15 @@ const Index = () => {
         <Flex my={8} justify="center">
           <Button
             colorScheme="teal"
+            isLoading={loading}
             onClick={() =>
-              setVariables((state) => ({
-                limit: state.limit,
-                cursor: data.posts.posts[data.posts.posts.length - 1].createdAt,
-              }))
+              fetchMore({
+                variables: {
+                  limit: 15,
+                  cursor:
+                    data.posts.posts[data.posts.posts.length - 1].createdAt,
+                },
+              })
             }
           >
             Load More...
@@ -75,4 +74,4 @@ const Index = () => {
   );
 };
 
-export default withUrqlClient(createUrqlClient, { ssr: true })(Index); // withUrqlClient is a higher order components
+export default Index;
