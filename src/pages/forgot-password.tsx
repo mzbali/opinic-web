@@ -5,18 +5,16 @@ import { NextPage } from 'next';
 import { InputField } from '../components/InputField';
 import { Wrapper } from '../components/Wrapper';
 import { useForgotPasswordMutation } from '../generated/graphql';
-import { createUrqlClient } from '../utils/createUrqlClient';
-import { withUrqlClient } from 'next-urql';
 
 const ForgotPassword: NextPage = () => {
-  const [, forgotPassword] = useForgotPasswordMutation();
+  const [forgotPassword] = useForgotPasswordMutation();
   const [isSent, setIsSent] = useState<boolean>(false);
   return (
     <Formik
       initialValues={{ email: '' }}
       onSubmit={async (values) => {
         console.log(values);
-        await forgotPassword(values);
+        await forgotPassword({ variables: values });
         setIsSent(true);
       }}
     >
@@ -48,4 +46,4 @@ const ForgotPassword: NextPage = () => {
   );
 };
 
-export default withUrqlClient(createUrqlClient)(ForgotPassword);
+export default ForgotPassword;

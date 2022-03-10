@@ -11,7 +11,7 @@ export const UpdootSection: React.FC<UpdootSectionProps> = ({ post }) => {
   const [loadingState, setLoadingState] = useState<
     'ideal' | 'updoot' | 'downdoot'
   >('ideal');
-  const [, vote] = useVoteMutation();
+  const [vote] = useVoteMutation({ notifyOnNetworkStatusChange: true });
   return (
     <Flex direction="column" justify="center" alignItems="center" mr={6}>
       <IconButton
@@ -23,7 +23,7 @@ export const UpdootSection: React.FC<UpdootSectionProps> = ({ post }) => {
             return;
           }
           setLoadingState('updoot');
-          await vote({ value: 1, postId: post.id });
+          await vote({ variables: { value: 1, postId: post.id } });
           setLoadingState('ideal');
         }}
         isLoading={loadingState === 'updoot'}
@@ -38,7 +38,7 @@ export const UpdootSection: React.FC<UpdootSectionProps> = ({ post }) => {
             return;
           }
           setLoadingState('downdoot');
-          await vote({ value: -1, postId: post.id });
+          await vote({ variables: { value: -1, postId: post.id } });
           setLoadingState('ideal');
         }}
         isLoading={loadingState === 'downdoot'}

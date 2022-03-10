@@ -8,21 +8,21 @@ import { Wrapper } from '../../components/Wrapper';
 import { useChangePasswordMutation } from '../../generated/graphql';
 import { toErrorMap } from '../../utils/toErrorMap';
 import NextLink from 'next/link';
-import { withUrqlClient } from 'next-urql';
-import { createUrqlClient } from '../../utils/createUrqlClient';
 
 const ChangePassword: NextPage = () => {
   const router = useRouter();
   const [isExpired, setIsExpired] = useState<string | null>(null);
-  const [, changePassword] = useChangePasswordMutation();
+  const [changePassword] = useChangePasswordMutation();
   return (
     <Formik
       initialValues={{ newPassword: '' }}
       onSubmit={async (values, { setErrors }) => {
         const response = await changePassword({
-          token:
-            typeof router.query.token === 'string' ? router.query.token : '',
-          newPassword: values.newPassword,
+          variables: {
+            token:
+              typeof router.query.token === 'string' ? router.query.token : '',
+            newPassword: values.newPassword,
+          },
         });
         if (response.data?.changePassword.errors) {
           const errorMap = toErrorMap(response.data.changePassword.errors);
@@ -68,4 +68,4 @@ const ChangePassword: NextPage = () => {
   );
 };
 
-export default withUrqlClient(createUrqlClient)(ChangePassword);
+export default ChangePassword;

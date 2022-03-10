@@ -1,19 +1,17 @@
-import { withUrqlClient } from 'next-urql';
 import { Text } from '@chakra-ui/react';
 import { Layout } from '../../components/Layout';
 import { usePostQuery } from '../../generated/graphql';
-import { createUrqlClient } from '../../utils/createUrqlClient';
 import { NextPage } from 'next';
 import { useGetIntId } from '../../utils/useGetIntId';
 
 const Post: NextPage = () => {
   const intId = useGetIntId();
-  const [{ data, fetching, error }] = usePostQuery({
+  const { data, loading, error } = usePostQuery({
     variables: {
       id: intId,
     },
   });
-  if (fetching) {
+  if (loading) {
     return (
       <Layout>
         <Text>Loading...</Text>
@@ -40,4 +38,4 @@ const Post: NextPage = () => {
   );
 };
 
-export default withUrqlClient(createUrqlClient, { ssr: true })(Post);
+export default Post;
