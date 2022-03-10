@@ -1,15 +1,21 @@
 import { Box, Button, Flex, Heading, Link } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import React from 'react';
-import { useLogoutMutation, useMeQuery } from '../generated/graphql';
+import {
+  MeDocument,
+  MeQuery,
+  PostsDocument,
+  useLogoutMutation,
+  useMeQuery,
+} from '../generated/graphql';
 
 interface NavBarProps {}
 
 export const NavBar: React.FC<NavBarProps> = ({}) => {
-  const [{ data, fetching }] = useMeQuery();
-  const [{ fetching: logoutFetching }, logout] = useLogoutMutation();
+  const { data, loading } = useMeQuery();
+  const [logout, { loading: logoutFetching }] = useLogoutMutation();
   let body = null;
-  if (fetching) {
+  if (loading) {
   } else if (!data?.me) {
     body = (
       <>
@@ -32,7 +38,37 @@ export const NavBar: React.FC<NavBarProps> = ({}) => {
         <Box mr={2}>{data.me.username}</Box>
         <Button
           variant="link"
-          onClick={() => logout()}
+          onClick={() =>
+            logout({
+              update: (cache) => {
+                cache.writeQuery<MeQuery>({
+                  query: MeDocument,
+                  data: { me: null }, // make me query null when logout
+                });
+
+                // const paginatedPosts = cache.readQuery<PaginatedPosts>({
+                //   query: PostsDocument,
+                // });
+                // console.log(paginatedPosts);
+                // if (paginatedPosts) {
+                //   cache.writeQuery<PaginatedPosts>({
+                //     query: PostsDocument,
+                //     variables: { limit: 15 },
+                //     data: {
+                //       hasMore: paginatedPosts?.hasMore || true,
+                //       posts: paginatedPosts?.posts.map((post) => ({
+                //         ...post,
+                //         voteStatus: null,
+                //       })),
+                //     },
+                //   });
+                // }
+              },
+              refetchQueries: [
+                { query: PostsDocument, variables: { limit: 15 } }, // refetch posts when logout
+              ],
+            })
+          }
           isLoading={logoutFetching}
         >
           Logout
