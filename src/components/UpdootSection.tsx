@@ -1,7 +1,13 @@
-import React, { useState } from 'react';
+import { gql } from '@apollo/client';
+import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 import { Flex, IconButton, Text } from '@chakra-ui/react';
-import { ChevronUpIcon, ChevronDownIcon } from '@chakra-ui/icons';
-import { PostSnippetFragment, useVoteMutation } from '../generated/graphql';
+import React, { useState } from 'react';
+import {
+  Post,
+  PostDocument,
+  PostSnippetFragment,
+  useVoteMutation,
+} from '../generated/graphql';
 
 interface UpdootSectionProps {
   post: PostSnippetFragment;
@@ -23,7 +29,42 @@ export const UpdootSection: React.FC<UpdootSectionProps> = ({ post }) => {
             return;
           }
           setLoadingState('updoot');
-          await vote({ variables: { value: 1, postId: post.id } });
+          await vote({
+            variables: { value: 1, postId: post.id },
+            update: (cache) => {
+              const postFragment: Partial<Post> | null = cache.readFragment({
+                fragment: gql`
+                  fragment _ on Post {
+                    id
+                    points
+                    voteStatus
+                  }
+                `,
+                id: 'Post:' + post.id,
+              });
+              if (postFragment?.voteStatus === 1) {
+                return;
+              }
+              const newPoints =
+                post.points + 1 * (!postFragment?.voteStatus ? 1 : 2);
+              cache.writeFragment({
+                id: `Post:${post.id}`,
+                fragment: gql`
+                  fragment _ on Post {
+                    id
+                    points
+                    voteStatus
+                  }
+                `,
+                data: {
+                  ...postFragment,
+                  id: post.id,
+                  voteStatus: 1,
+                  points: newPoints,
+                },
+              });
+            },
+          });
           setLoadingState('ideal');
         }}
         isLoading={loadingState === 'updoot'}
@@ -38,7 +79,12 @@ export const UpdootSection: React.FC<UpdootSectionProps> = ({ post }) => {
             return;
           }
           setLoadingState('downdoot');
-          await vote({ variables: { value: -1, postId: post.id } });
+          await vote({
+            variables: { value: -1, postId: post.id },
+            refetchQueries: [
+              { query: PostDocument, variables: { id: post.id } }, // refetch data when updoot
+            ],
+          });
           setLoadingState('ideal');
         }}
         isLoading={loadingState === 'downdoot'}
