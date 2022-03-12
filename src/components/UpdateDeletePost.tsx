@@ -9,13 +9,20 @@ interface UpdateDeletePostProps {
 }
 
 export const UpdateDeletePost: React.FC<UpdateDeletePostProps> = ({ id }) => {
-  const [, deletePost] = useDeletePostMutation();
+  const [deletePost] = useDeletePostMutation();
   return (
     <Flex align="end" justify="end">
       <IconButton
         aria-label="delete post"
         icon={<DeleteIcon />}
-        onClick={() => deletePost({ id })}
+        onClick={() =>
+          deletePost({
+            variables: { id },
+            update: (cache) => {
+              cache.evict({ id: 'Post:' + id });
+            },
+          })
+        }
       />
       <NextLink href="/post/edit/[id]" as={`/post/edit/${id}`}>
         <Link ml={4}>
