@@ -45,6 +45,7 @@ export const NavBar: React.FC<NavBarProps> = ({}) => {
                   query: MeDocument,
                   data: { me: null }, // make me query null when logout
                 });
+                //await apolloClient.resetStore();  // reset cache
 
                 // const paginatedPosts = cache.readQuery<PaginatedPosts>({
                 //   query: PostsDocument,
